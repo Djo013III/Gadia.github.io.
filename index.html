@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Честняков — Библиотека</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">ЧЕСТНЯКОВ<span>.</span></div>
+    <nav class="nav">
+      <a href="#catalog">Каталог</a>
+      <a href="#about">О проекте</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-tag">Вселенная Шаблова</p>
+      <h1>Ефим Честняков</h1>
+      <p class="hero-desc">Художник, скульптор, писатель и провидец. Библиотека материалов о человеке, который создал свой мир из глины, красок и сказок.</p>
+      <a href="#catalog" class="btn">Смотреть каталог</a>
+    </div>
+  </section>
+
+  <!-- ФИЛЬТРЫ -->
+  <section class="filters" id="catalog">
+    <div class="filters-inner">
+      <input type="text" id="search" placeholder="Поиск по названию или описанию...">
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <!-- КАТАЛОГ -->
+  <main class="catalog">
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty">Ничего не найдено. Попробуйте другой запрос.</p>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="about">
+    <p>Библиотека материалов о Ефиме Васильевиче Честнякове (1874–1961).</p>
+    <p class="muted">Собрано из открытых источников. GitHub Pages.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
