@@ -7,9 +7,20 @@ const searchToggle = document.getElementById('searchToggle');
 const searchClose = document.getElementById('searchClose');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
+const promo = document.getElementById('promo');
+const promoClose = document.getElementById('promoClose');
 
 let items = [];
 let activeCategory = 'Все';
+
+// ===== ПРОМО-БАННЕР =====
+if (localStorage.getItem('promoHidden') === '1') {
+  promo.classList.add('hidden');
+}
+promoClose.addEventListener('click', () => {
+  promo.classList.add('hidden');
+  localStorage.setItem('promoHidden', '1');
+});
 
 // ===== ТЕМА =====
 const sunIcon = `<circle cx="12" cy="12" r="4"></circle>
@@ -48,7 +59,6 @@ searchClose.addEventListener('click', closeSearch);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeSearch();
 });
-// закрытие по клику вне панели
 document.addEventListener('click', e => {
   if (
     searchPanel.classList.contains('open') &&
