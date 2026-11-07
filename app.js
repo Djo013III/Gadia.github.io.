@@ -93,7 +93,7 @@ document.addEventListener('click', e => {
 });
 
 // ===== ЗАГРУЗКА ДАННЫХ =====
-fetch('data.json')
+fetch('https://djo013iii.github.io/Gadia.github.io.//data.json')
   .then(r => {
     if (!r.ok) throw new Error('data.json not found');
     return r.json();
