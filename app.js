@@ -119,9 +119,7 @@ function initCarousel() {
   carouselInitialized = true;
 
   sections.forEach((sec, i) => {
-  if (e.key === 'Escape') modal.classList.remove('open');
-});
-const slide = document.createElement('div');
+    const slide = document.createElement('div');
     slide.className = 'slide' + (i === 0 ? ' active' : '');
     slide.style.background = sec.background || 'var(--hero-grad)';
     slidesEl.appendChild(slide);
@@ -130,8 +128,8 @@ const slide = document.createElement('div');
     dot.className = 'dot' + (i === 0 ? ' active' : '');
     dot.innerHTML = '<span></span>';
     dotsEl.appendChild(dot);
-  };
-{
+  });
+
   updateHeroText(0);
   startAutoplay();
 
