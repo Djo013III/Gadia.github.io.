@@ -130,7 +130,7 @@ const slide = document.createElement('div');
     dot.className = 'dot' + (i === 0 ? ' active' : '');
     dot.innerHTML = '<span></span>';
     dotsEl.appendChild(dot);
-  });
+  };
 
   updateHeroText(0);
   startAutoplay();
