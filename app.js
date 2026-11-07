@@ -9,175 +9,123 @@ const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 const promo = document.getElementById('promo');
 const promoClose = document.getElementById('promoClose');
+const promoOpenCollections = document.getElementById('promoOpenCollections');
+
+const collectionsToggle = document.getElementById('collectionsToggle');
+const collectionsPanel = document.getElementById('collectionsPanel');
+const collectionsClose = document.getElementById('collectionsClose');
+const collectionsGrid = document.getElementById('collectionsGrid');
+
+const activeCollection = document.getElementById('activeCollection');
+const activeCollectionName = document.getElementById('activeCollectionName');
+const clearCollectionBtn = document.getElementById('clearCollection');
 
 let items = [];
 let activeCategory = 'Все';
+let activeCollectionIds = null; // null = подборка не выбрана
 
-// ===== ПРОМО-БАННЕР =====
-if (localStorage.getItem('promoHidden') === '1') {
-  promo.classList.add('hidden');
+// ===== ПОДБОРКИ =====
+// ID должны совпадать с data.json
+const COLLECTIONS = [
+  {
+    id: 'start',
+    icon: '🚪',
+    title: 'С чего начать',
+    desc: 'Краткий маршрут: кто такой Честняков, его главная картина и где он учился.',
+    ids: ['psevdonim', 'shkola-Repina', 'city-wellbeing']
+  },
+  {
+    id: 'painting',
+    icon: '🎨',
+    title: 'Живопись и утопия',
+    desc: 'Главные полотна и история их обретения. Для тех, кто пришёл смотреть картины.',
+    ids: ['city-wellbeing', 'obretenie', 'materialy']
+  },
+  {
+    id: 'glinyanki',
+    icon: '🏺',
+    title: 'Глинянки и театр',
+    desc: 'Скульптура, детский театр и трагедия «актёров» из глины.',
+    ids: ['glinyanki', 'teatr']
+  },
+  {
+    id: 'skazki',
+    icon: '📖',
+    title: 'Сказки и мифология',
+    desc: 'Литература, кологривский говор и персонажи народных поверий.',
+    ids: ['chudesnoe-yabloko', 'teteriviny-korol', 'mifologiya']
+  },
+  {
+    id: 'memory',
+    icon: '🕯️',
+    title: 'Народная память',
+    desc: 'Пророчества, целительство, Ефимов ключ и почитание как праведника.',
+    ids: ['e fimov-kluch', 'prorochestva', 'yurodstvo']
+  },
+  {
+    id: 'bio',
+    icon: '🧭',
+    title: 'Биография и быт',
+    desc: 'Семья, сёстры, фотография и повседневная жизнь в Шаблове.',
+    ids: ['psevdonim', 'sestry', 'fotograf', 'obretenie']
+  }
+];
+
+function renderCollections() {
+  collectionsGrid.innerHTML = '';
+  COLLECTIONS.forEach(col => {
+    // считаем только те id, что реально есть в data.json
+    const count = col.ids.filter(id => items.some(i => i.id === id)).length;
+    const card = document.createElement('div');
+    card.className = 'collection-card';
+    card.innerHTML = `
+      <span class="cc-icon">${col.icon}</span>
+      <span class="cc-title">${col.title}</span>
+      <span class="cc-desc">${col.desc}</span>
+      <span class="cc-count">${count} материалов</span>
+    `;
+    card.onclick = () => applyCollection(col);
+    collectionsGrid.appendChild(card);
+  });
 }
-promoClose.addEventListener('click', () => {
-  promo.classList.add('hidden');
-  localStorage.setItem('promoHidden', '1');
-});
 
-// ===== ТЕМА =====
-const sunIcon = `<circle cx="12" cy="12" r="4"></circle>
-  <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>`;
-const moonIcon = `<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>`;
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
-  localStorage.setItem('theme', theme);
-}
-
-const savedTheme = localStorage.getItem('theme')
-  || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-applyTheme(savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-});
-
-// ===== ПОИСК =====
-function openSearch() {
-  searchPanel.classList.add('open');
-  setTimeout(() => searchInput.focus(), 150);
-}
-function closeSearch() {
-  searchPanel.classList.remove('open');
+function applyCollection(col) {
+  activeCollectionIds = col.ids;
+  activeCategory = 'Все';
   searchInput.value = '';
+  // сбрасываем чипы
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.textContent === 'Все');
+  });
+  activeCollectionName.textContent = `${col.icon} ${col.title}`;
+  activeCollection.hidden = false;
+  closeCollections();
+  render();
+  // прокрутка к каталогу
+  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearCollection() {
+  activeCollectionIds = null;
+  activeCollection.hidden = true;
   render();
 }
-searchToggle.addEventListener('click', () => {
-  searchPanel.classList.contains('open') ? closeSearch() : openSearch();
-});
-searchClose.addEventListener('click', closeSearch);
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeSearch();
-});
-document.addEventListener('click', e => {
-  if (
-    searchPanel.classList.contains('open') &&
-    !searchPanel.contains(e.target) &&
-    !searchToggle.contains(e.target)
-  ) closeSearch();
-});
 
-// ===== ГРАДИЕНТЫ =====
-const gradients = [
-  'linear-gradient(135deg, #3a2a1a, #1a1208)',
-  'linear-gradient(135deg, #2a1a3a, #12081a)',
-  'linear-gradient(135deg, #1a2a3a, #08121a)',
-  'linear-gradient(135deg, #3a1a1a, #1a0808)',
-  'linear-gradient(135deg, #1a3a2a, #081a12)',
-  'linear-gradient(135deg, #3a3a1a, #1a1a08)'
-];
-const lightGradients = [
-  'linear-gradient(135deg, #e8d3b0, #d8bf94)',
-  'linear-gradient(135deg, #d8c8e0, #c4b0d0)',
-  'linear-gradient(135deg, #c8d8e0, #aec4d0)',
-  'linear-gradient(135deg, #e0c8c0, #d0b0a4)',
-  'linear-gradient(135deg, #c8dcc8, #aec8ae)',
-  'linear-gradient(135deg, #e0dcc0, #d0c8a4)'
-];
-function gradientFor(str) {
-  let sum = 0;
-  for (let i = 0; i < str.length; i++) sum += str.charCodeAt(i);
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const palette = isLight ? lightGradients : gradients;
-  return palette[sum % palette.length];
+clearCollectionBtn.addEventListener('click', clearCollection);
+
+function openCollections() {
+  collectionsPanel.classList.add('open');
+  collectionsToggle.classList.add('active');
+  closeSearch();
 }
-
-// ===== ЗАГРУЗКА ДАННЫХ =====
-fetch('data.json')
-  .then(r => r.json())
-  .then(data => { items = data; buildChips(); render(); })
-  .catch(() => {
-    items = window.FALLBACK_ITEMS || [];
-    buildChips();
-    render();
-  });
-
-function buildChips() {
-  const cats = ['Все', ...new Set(items.map(i => i.category))];
-  chipsContainer.innerHTML = '';
-  cats.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'chip' + (cat === activeCategory ? ' active' : '');
-    btn.textContent = cat;
-    btn.onclick = () => {
-      activeCategory = cat;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      render();
-    };
-    chipsContainer.appendChild(btn);
-  });
+function closeCollections() {
+  collectionsPanel.classList.remove('open');
+  collectionsToggle.classList.remove('active');
 }
-
-function render() {
-  const q = searchInput.value.trim().toLowerCase();
-  const filtered = items.filter(item => {
-    const matchCat = activeCategory === 'Все' || item.category === activeCategory;
-    const matchSearch = !q ||
-      item.title.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q) ||
-      (item.tags || []).some(t => t.toLowerCase().includes(q));
-    return matchCat && matchSearch;
-  });
-
-  grid.innerHTML = '';
-  emptyMsg.style.display = filtered.length ? 'none' : 'block';
-
-  filtered.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-poster" style="background:${gradientFor(item.title)}">
-        ${item.title.split(' ').slice(0, 2).join('<br>')}
-      </div>
-      <div class="card-body">
-        <div class="card-cat">${item.category}</div>
-        <div class="card-title">${item.title}</div>
-        <div class="card-desc">${item.description}</div>
-        <div class="card-tags">${(item.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      </div>
-    `;
-    card.onclick = () => openModal(item);
-    grid.appendChild(card);
-  });
-}
-
-searchInput.addEventListener('input', render);
-
-// ===== МОДАЛЬНОЕ ОКНО =====
-const modal = document.createElement('div');
-modal.className = 'modal';
-modal.innerHTML = `
-  <div class="modal-box">
-    <button class="modal-close">×</button>
-    <div class="modal-cat"></div>
-    <div class="modal-title"></div>
-    <div class="modal-text"></div>
-    <div class="modal-tags"></div>
-  </div>
-`;
-document.body.appendChild(modal);
-
-function openModal(item) {
-  modal.querySelector('.modal-cat').textContent = item.category;
-  modal.querySelector('.modal-title').textContent = item.title;
-  modal.querySelector('.modal-text').textContent = item.description;
-  modal.querySelector('.modal-tags').innerHTML =
-    (item.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
-  modal.classList.add('open');
-}
-modal.querySelector('.modal-close').onclick = () => modal.classList.remove('open');
-modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') modal.classList.remove('open');
+collectionsToggle.addEventListener('click', () => {
+  collectionsPanel.classList.contains('open') ? closeCollections() : openCollections();
 });
+collectionsClose.addEventListener('click', closeCollections);
+
+// ===== ПРОМО-БАННЕР =====
+if (localStorage.getItem
