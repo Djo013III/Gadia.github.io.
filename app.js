@@ -1,3 +1,4 @@
+// ===== ЭЛЕМЕНТЫ =====
 const grid = document.getElementById('grid');
 const chipsContainer = document.getElementById('chips');
 const searchInput = document.getElementById('search');
@@ -23,11 +24,13 @@ const subsectionList = document.getElementById('subsectionList');
 const backBtn = document.getElementById('backBtn');
 const carousel = document.querySelector('.hero-carousel');
 
+// ===== СОСТОЯНИЕ =====
 let items = [];
-let activeCategory = 'Все';
 let sections = [];
+let activeCategory = 'Все';
 let currentSlide = 0;
 let slideTimer = null;
+let carouselInitialized = false;
 const SLIDE_DURATION = 5000;
 
 // ===== ТЕМА =====
@@ -37,7 +40,7 @@ const moonIcon = `<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+  if (themeIcon) themeIcon.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
   localStorage.setItem('theme', theme);
 }
 
@@ -45,28 +48,35 @@ const savedTheme = localStorage.getItem('theme')
   || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 applyTheme(savedTheme);
 
-themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-});
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+}
 
 // ===== ПОИСК =====
 function openSearch() {
+  if (!searchPanel) return;
   searchPanel.classList.add('open');
-  setTimeout(() => searchInput.focus(), 150);
+  setTimeout(() => searchInput && searchInput.focus(), 150);
 }
 
 function closeSearch() {
+  if (!searchPanel) return;
   searchPanel.classList.remove('open');
-  searchInput.value = '';
+  if (searchInput) searchInput.value = '';
   render();
 }
 
-searchToggle.addEventListener('click', () => {
-  searchPanel.classList.contains('open') ? closeSearch() : openSearch();
-});
+if (searchToggle) {
+  searchToggle.addEventListener('click', () => {
+    if (searchPanel && searchPanel.classList.contains('open')) closeSearch();
+    else openSearch();
+  });
+}
 
-searchClose.addEventListener('click', closeSearch);
+if (searchClose) searchClose.addEventListener('click', closeSearch);
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeSearch();
@@ -74,25 +84,30 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('click', e => {
   if (
+    searchPanel &&
     searchPanel.classList.contains('open') &&
     !searchPanel.contains(e.target) &&
+    searchToggle &&
     !searchToggle.contains(e.target)
   ) closeSearch();
 });
 
 // ===== ЗАГРУЗКА ДАННЫХ =====
 fetch('data.json')
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error('data.json not found');
+    return r.json();
+  })
   .then(data => {
-    items = data.items || [];
-    sections = data.sections || [];
+    items = Array.isArray(data.items) ? data.items : [];
+    sections = Array.isArray(data.sections) ? data.sections : [];
     buildChips();
     render();
     initCarousel();
   })
   .catch(() => {
-    items = window.FALLBACK_ITEMS || [];
-    sections = window.FALLBACK_SECTIONS || [];
+    items = Array.isArray(window.FALLBACK_ITEMS) ? window.FALLBACK_ITEMS : [];
+    sections = Array.isArray(window.FALLBACK_SECTIONS) ? window.FALLBACK_SECTIONS : [];
     buildChips();
     render();
     initCarousel();
@@ -100,12 +115,15 @@ fetch('data.json')
 
 // ===== КАРУСЕЛЬ =====
 function initCarousel() {
-  if (!sections.length) return;
+  if (carouselInitialized || !slidesEl || !dotsEl || !sections.length) return;
+  carouselInitialized = true;
 
   sections.forEach((sec, i) => {
-    const slide = document.createElement('div');
+  if (e.key === 'Escape') modal.classList.remove('open');
+});
+const slide = document.createElement('div');
     slide.className = 'slide' + (i === 0 ? ' active' : '');
-    slide.style.background = sec.background;
+    slide.style.background = sec.background || 'var(--hero-grad)';
     slidesEl.appendChild(slide);
 
     const dot = document.createElement('div');
@@ -117,23 +135,26 @@ function initCarousel() {
   updateHeroText(0);
   startAutoplay();
 
-  heroBtn.addEventListener('click', () => openSection(currentSlide));
-  backBtn.addEventListener('click', closeSection);
+  if (heroBtn) heroBtn.addEventListener('click', () => openSection(currentSlide));
+  if (backBtn) backBtn.addEventListener('click', closeSection);
 }
 
 function updateHeroText(index) {
   const sec = sections[index];
-  if (!sec) return;
+  if (!sec || !heroContent) return;
+
   heroContent.style.opacity = '0';
   setTimeout(() => {
-    heroTag.textContent = sec.tag;
-    heroTitle.textContent = sec.title;
-    heroDesc.textContent = sec.description;
+    if (heroTag) heroTag.textContent = sec.tag || '';
+    if (heroTitle) heroTitle.textContent = sec.title || '';
+    if (heroDesc) heroDesc.textContent = sec.description || '';
     heroContent.style.opacity = '1';
   }, 250);
 }
 
 function goToSlide(index) {
+  if (!sections.length) return;
+
   const slides = slidesEl.querySelectorAll('.slide');
   const dots = dotsEl.querySelectorAll('.dot');
 
@@ -142,9 +163,11 @@ function goToSlide(index) {
   dots.forEach((d, i) => {
     d.classList.toggle('active', i === index);
     const span = d.querySelector('span');
-    span.style.animation = 'none';
-    void span.offsetWidth;
-    span.style.animation = '';
+    if (span) {
+      span.style.animation = 'none';
+      void span.offsetWidth;
+      span.style.animation = '';
+    }
   });
 
   currentSlide = index;
@@ -153,6 +176,7 @@ function goToSlide(index) {
 
 function startAutoplay() {
   stopAutoplay();
+  if (!sections.length) return;
   slideTimer = setInterval(() => {
     goToSlide((currentSlide + 1) % sections.length);
   }, SLIDE_DURATION);
@@ -168,33 +192,35 @@ function stopAutoplay() {
 // ===== МИНИ-БИБЛИОТЕКА РАЗДЕЛА =====
 function openSection(index) {
   const sec = sections[index];
-  if (!sec) return;
+  if (!sec || !sectionView) return;
 
   stopAutoplay();
 
-  svTitle.textContent = sec.title;
-  svDesc.textContent = sec.description;
+  if (svTitle) svTitle.textContent = sec.title || '';
+  if (svDesc) svDesc.textContent = sec.description || '';
 
-  subsectionList.innerHTML = '';
-  (sec.subsections || []).forEach(sub => {
-    const div = document.createElement('div');
-    div.className = 'subsection';
-    div.innerHTML = `
-      <h3>${sub.title}</h3>
-      <p>${sub.text}</p>
-      <div class="sub-tags">${(sub.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-    `;
-    subsectionList.appendChild(div);
-  });
+  if (subsectionList) {
+    subsectionList.innerHTML = '';
+    (sec.subsections || []).forEach(sub => {
+      const div = document.createElement('div');
+      div.className = 'subsection';
+      div.innerHTML = `
+        <h3>${sub.title || ''}</h3>
+        <p>${sub.text || ''}</p>
+        <div class="sub-tags">${(sub.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      `;
+      subsectionList.appendChild(div);
+    });
+  }
 
-  carousel.style.display = 'none';
+  if (carousel) carousel.style.display = 'none';
   sectionView.classList.add('open');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function closeSection() {
-  sectionView.classList.remove('open');
-  carousel.style.display = 'flex';
+  if (sectionView) sectionView.classList.remove('open');
+  if (carousel) carousel.style.display = 'flex';
   startAutoplay();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -228,6 +254,7 @@ function gradientFor(str) {
 
 // ===== КАТАЛОГ =====
 function buildChips() {
+  if (!chipsContainer) return;
   const cats = ['Все', ...new Set(items.map(i => i.category))];
   chipsContainer.innerHTML = '';
   cats.forEach(cat => {
@@ -245,30 +272,32 @@ function buildChips() {
 }
 
 function render() {
-  const q = searchInput.value.trim().toLowerCase();
+  if (!grid) return;
+
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
   const filtered = items.filter(item => {
     const matchCat = activeCategory === 'Все' || item.category === activeCategory;
     const matchSearch = !q ||
-      item.title.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q) ||
+      (item.title || '').toLowerCase().includes(q) ||
+      (item.description || '').toLowerCase().includes(q) ||
       (item.tags || []).some(t => t.toLowerCase().includes(q));
     return matchCat && matchSearch;
   });
 
   grid.innerHTML = '';
-  emptyMsg.style.display = filtered.length ? 'none' : 'block';
+  if (emptyMsg) emptyMsg.style.display = filtered.length ? 'none' : 'block';
 
   filtered.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="card-poster" style="background:${gradientFor(item.title)}">
-        ${item.title.split(' ').slice(0, 2).join('<br>')}
+      <div class="card-poster" style="background:${gradientFor(item.title || '')}">
+        ${(item.title || '').split(' ').slice(0, 2).join('<br>')}
       </div>
       <div class="card-body">
-        <div class="card-cat">${item.category}</div>
-        <div class="card-title">${item.title}</div>
-        <div class="card-desc">${item.description}</div>
+        <div class="card-cat">${item.category || ''}</div>
+        <div class="card-title">${item.title || ''}</div>
+        <div class="card-desc">${item.description || ''}</div>
         <div class="card-tags">${(item.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
       </div>
     `;
@@ -277,7 +306,7 @@ function render() {
   });
 }
 
-searchInput.addEventListener('input', render);
+if (searchInput) searchInput.addEventListener('input', render);
 
 // ===== МОДАЛЬНОЕ ОКНО =====
 const modal = document.createElement('div');
@@ -294,15 +323,22 @@ modal.innerHTML = `
 document.body.appendChild(modal);
 
 function openModal(item) {
-  modal.querySelector('.modal-cat').textContent = item.category;
-  modal.querySelector('.modal-title').textContent = item.title;
-  modal.querySelector('.modal-text').textContent = item.description;
-  modal.querySelector('.modal-tags').innerHTML =
-    (item.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+  const catEl = modal.querySelector('.modal-cat');
+  const titleEl = modal.querySelector('.modal-title');
+  const textEl = modal.querySelector('.modal-text');
+  const tagsEl = modal.querySelector('.modal-tags');
+
+  if (catEl) catEl.textContent = item.category || '';
+  if (titleEl) titleEl.textContent = item.title || '';
+  if (textEl) textEl.textContent = item.description || '';
+  if (tagsEl) {
+    tagsEl.innerHTML = (item.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+  }
   modal.classList.add('open');
 }
 
-modal.querySelector('.modal-close').onclick = () => modal.classList.remove('open');
+const modalClose = modal.querySelector('.modal-close');
+if (modalClose) modalClose.onclick = () => modal.classList.remove('open');
 
 modal.onclick = e => {
   if (e.target === modal) modal.classList.remove('open');
