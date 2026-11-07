@@ -92,26 +92,13 @@ document.addEventListener('click', e => {
   ) closeSearch();
 });
 
-// ===== ЗАГРУЗКА ДАННЫХ =====
-fetch('https://djo013iii.github.io/Gadia.github.io.//data.json')
-  .then(r => {
-    if (!r.ok) throw new Error('data.json not found');
-    return r.json();
-  })
-  .then(data => {
-    items = Array.isArray(data.items) ? data.items : [];
-    sections = Array.isArray(data.sections) ? data.sections : [];
-    buildChips();
-    render();
-    initCarousel();
-  })
-  .catch(() => {
-    items = Array.isArray(window.FALLBACK_ITEMS) ? window.FALLBACK_ITEMS : [];
-    sections = Array.isArray(window.FALLBACK_SECTIONS) ? window.FALLBACK_SECTIONS : [];
-    buildChips();
-    render();
-    initCarousel();
-  });
+// ===== ИНИЦИАЛИЗАЦИЯ ДАННЫХ (БЕЗ FETCH) =====
+// Данные берутся из файла data.js
+items = Array.isArray(window.myData.items) ? window.myData.items : [];
+sections = Array.isArray(window.myData.sections) ? window.myData.sections : [];
+buildChips();
+render();
+initCarousel();
 
 // ===== КАРУСЕЛЬ =====
 function initCarousel() {
