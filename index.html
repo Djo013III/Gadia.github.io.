@@ -14,6 +14,15 @@
   <header class="header">
     <div class="logo">ЧЕСТНЯКОВ<span>.</span></div>
     <div class="header-actions">
+      <button class="icon-btn collections-btn" id="collectionsToggle" aria-label="Подборки">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+        </svg>
+        <span class="collections-label">Подборки</span>
+      </button>
       <button class="icon-btn" id="searchToggle" aria-label="Поиск">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <circle cx="11" cy="11" r="7"></circle>
@@ -33,6 +42,17 @@
     </div>
   </header>
 
+  <!-- ПАНЕЛЬ ПОДБОРОК -->
+  <div class="collections-panel" id="collectionsPanel">
+    <div class="collections-inner">
+      <div class="collections-head">
+        <h3>С чего начать</h3>
+        <button class="panel-close" id="collectionsClose" aria-label="Закрыть">×</button>
+      </div>
+      <div class="collections-grid" id="collectionsGrid"></div>
+    </div>
+  </div>
+
   <!-- ПАНЕЛЬ ПОИСКА -->
   <div class="search-panel" id="searchPanel">
     <div class="search-panel-inner">
@@ -45,19 +65,19 @@
     </div>
   </div>
 
-  <!-- ПРОМО-БАННЕР: готовые каталоги -->
+  <!-- ПРОМО-БАННЕР -->
   <div class="promo" id="promo">
     <div class="promo-inner">
       <span class="promo-badge">Подборки</span>
       <p class="promo-text">
-        <strong>Готовые каталоги уже собраны</strong> — загляните в тематические подборки: живопись, «глинянки», сказки и народная память.
+        <strong>Не знаете, с чего начать?</strong> Откройте готовые маршруты: живопись, «глинянки», сказки и народная память.
       </p>
-      <a href="#catalog" class="promo-btn">Смотреть каталог</a>
+      <button class="promo-btn" id="promoOpenCollections">Смотреть подборки</button>
       <button class="promo-close" id="promoClose" aria-label="Скрыть баннер">×</button>
     </div>
   </div>
 
-  <!-- HERO (компактный) -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -67,24 +87,7 @@
     </div>
   </section>
 
-  <!-- КАТАЛОГ СРАЗУ -->
+  <!-- КАТАЛОГ -->
   <section class="filters" id="catalog">
     <div class="filters-inner">
       <div class="chips" id="chips"></div>
-    </div>
-  </section>
-
-  <main class="catalog">
-    <div class="grid" id="grid"></div>
-    <p class="empty" id="empty">Ничего не найдено. Попробуйте другой запрос.</p>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer" id="about">
-    <p>Библиотека материалов о Ефиме Васильевиче Честнякове (1874–1961).</p>
-    <p class="muted">Собрано из открытых источников. GitHub Pages.</p>
-  </footer>
-
-  <script src="app.js"></script>
-</body>
-</html>
