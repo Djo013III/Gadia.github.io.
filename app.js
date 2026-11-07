@@ -131,7 +131,7 @@ const slide = document.createElement('div');
     dot.innerHTML = '<span></span>';
     dotsEl.appendChild(dot);
   };
-
+{
   updateHeroText(0);
   startAutoplay();
 
