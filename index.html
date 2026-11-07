@@ -14,15 +14,6 @@
   <header class="header">
     <div class="logo">ЧЕСТНЯКОВ<span>.</span></div>
     <div class="header-actions">
-      <button class="icon-btn collections-btn" id="collectionsToggle" aria-label="Подборки">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-        </svg>
-        <span class="collections-label">Подборки</span>
-      </button>
       <button class="icon-btn" id="searchToggle" aria-label="Поиск">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <circle cx="11" cy="11" r="7"></circle>
@@ -36,22 +27,11 @@
         </svg>
       </button>
       <nav class="nav">
+        <a href="#sections">Разделы</a>
         <a href="#catalog">Каталог</a>
-        <a href="#about">О проекте</a>
       </nav>
     </div>
   </header>
-
-  <!-- ПАНЕЛЬ ПОДБОРОК -->
-  <div class="collections-panel" id="collectionsPanel">
-    <div class="collections-inner">
-      <div class="collections-head">
-        <h3>С чего начать</h3>
-        <button class="panel-close" id="collectionsClose" aria-label="Закрыть">×</button>
-      </div>
-      <div class="collections-grid" id="collectionsGrid"></div>
-    </div>
-  </div>
 
   <!-- ПАНЕЛЬ ПОИСКА -->
   <div class="search-panel" id="searchPanel">
@@ -65,29 +45,47 @@
     </div>
   </div>
 
-  <!-- ПРОМО-БАННЕР -->
-  <div class="promo" id="promo">
-    <div class="promo-inner">
-      <span class="promo-badge">Подборки</span>
-      <p class="promo-text">
-        <strong>Не знаете, с чего начать?</strong> Откройте готовые маршруты: живопись, «глинянки», сказки и народная память.
-      </p>
-      <button class="promo-btn" id="promoOpenCollections">Смотреть подборки</button>
-      <button class="promo-close" id="promoClose" aria-label="Скрыть баннер">×</button>
-    </div>
-  </div>
-
-  <!-- HERO -->
-  <section class="hero">
+  <!-- БАННЕР-КАРУСЕЛЬ В СТИЛЕ ОККО -->
+  <section class="hero-carousel" id="sections">
+    <div class="slides" id="slides"></div>
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <p class="hero-tag">Вселенная Шаблова</p>
-      <h1>Ефим Честняков</h1>
-      <p class="hero-desc">Художник, скульптор, писатель и провидец. Библиотека материалов о человеке, который создал свой мир из глины, красок и сказок.</p>
+    <div class="hero-content" id="heroContent">
+      <p class="hero-tag" id="heroTag"></p>
+      <h1 id="heroTitle"></h1>
+      <p class="hero-desc" id="heroDesc"></p>
+      <button class="btn" id="heroBtn">Открыть раздел</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <!-- МИНИ-БИБЛИОТЕКА РАЗДЕЛА (скрыта по умолчанию) -->
+  <section class="section-view" id="sectionView">
+    <div class="section-view-inner">
+      <button class="back-btn" id="backBtn">← Назад к баннерам</button>
+      <h2 id="svTitle"></h2>
+      <p class="sv-desc" id="svDesc"></p>
+      <div class="subsection-list" id="subsectionList"></div>
     </div>
   </section>
 
-  <!-- КАТАЛОГ -->
+  <!-- КАТАЛОГ (общий) -->
   <section class="filters" id="catalog">
     <div class="filters-inner">
       <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <main class="catalog">
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty">Ничего не найдено. Попробуйте другой запрос.</p>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Библиотека материалов о Ефиме Васильевиче Честнякове (1874–1961).</p>
+    <p class="muted">Собрано из открытых источников. GitHub Pages.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
